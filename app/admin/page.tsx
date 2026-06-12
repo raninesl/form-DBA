@@ -73,6 +73,7 @@ export default function AdminDashboard() {
       'Ville': app.city,
       'Niveau d\'études': app.studyLevel,
       'Formation souhaitée': app.desiredProgram,
+      'Modules de perfectionnement': app.trainingModules || '',
       'Message': app.message || '',
       'Statut': statusLabels[app.status],
       'Date de candidature': new Date(app.createdAt).toLocaleDateString('fr-FR'),

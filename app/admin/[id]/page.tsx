@@ -129,6 +129,22 @@ export default function ApplicationDetail() {
             </div>
           </div>
 
+          {application.trainingModules && (
+            <div className="mb-8">
+              <h3 className="text-sm font-medium text-grayMedium uppercase mb-2">Modules de perfectionnement</h3>
+              <div className="text-grayDark">
+                {application.trainingModules.split(', ').map((module, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {module}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {application.message && (
             <div className="mb-8">
               <h3 className="text-sm font-medium text-grayMedium uppercase mb-2">Message / Motivation</h3>

@@ -47,6 +47,10 @@ export async function POST(request: Request) {
     const desiredProgram = formData.get('desiredProgram') as string
     const message = (formData.get('message') as string)?.trim() || null
     const rgpd = formData.get('rgpd') as string
+    
+    // Get all selected training modules
+    const trainingModulesArray = formData.getAll('trainingModules') as string[]
+    const trainingModules = trainingModulesArray.length > 0 ? trainingModulesArray.join(', ') : null
 
     if (!firstName) errors.firstName = 'Prénom requis'
     if (!lastName) errors.lastName = 'Nom requis'
@@ -121,6 +125,7 @@ export async function POST(request: Request) {
         message,
         cvUrl,
         diplomaUrl,
+        trainingModules,
       },
     })
 
@@ -141,6 +146,7 @@ export async function POST(request: Request) {
               <li><strong>Email :</strong> ${email}</li>
               <li><strong>Téléphone :</strong> ${phoneCode} ${phone}</li>
               <li><strong>Formation souhaitée :</strong> ${desiredProgram}</li>
+              ${trainingModules ? `<li><strong>Modules de perfectionnement :</strong> ${trainingModules}</li>` : ''}
               <li><strong>Niveau d'études :</strong> ${studyLevel}</li>
               <li><strong>Pays :</strong> ${country}</li>
               <li><strong>Ville :</strong> ${city}</li>
@@ -181,6 +187,7 @@ export async function POST(request: Request) {
               <li><strong>Ville :</strong> ${city}</li>
               <li><strong>Niveau d'études :</strong> ${studyLevel}</li>
               <li><strong>Formation souhaitée :</strong> ${desiredProgram}</li>
+              ${trainingModules ? `<li><strong>Modules de perfectionnement :</strong> ${trainingModules}</li>` : ''}
               ${message ? `<li><strong>Message :</strong> ${message}</li>` : ''}
             </ul>
 

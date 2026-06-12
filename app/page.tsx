@@ -252,6 +252,82 @@ export default function Home() {
               </div>
 
               <div className="animate-on-scroll opacity-0 translate-y-4 transition-all duration-700 ease-out group">
+                <label className="block text-sm font-medium text-grayDark mb-2 group-focus-within:text-primary transition-colors">Modules de perfectionnement (optionnels)</label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="module-management"
+                      name="trainingModules"
+                      value="Outils de management"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded transition-all duration-300"
+                    />
+                    <label htmlFor="module-management" className="text-sm text-grayDark">Outils de management</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="module-data"
+                      name="trainingModules"
+                      value="Logiciels de data analysis (Python, SPSS, CRM, BI)"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded transition-all duration-300"
+                    />
+                    <label htmlFor="module-data" className="text-sm text-grayDark">Logiciels de data analysis (Python, SPSS, CRM, BI)</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="module-english"
+                      name="trainingModules"
+                      value="Anglais des affaires"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded transition-all duration-300"
+                    />
+                    <label htmlFor="module-english" className="text-sm text-grayDark">Anglais des affaires</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="module-fle"
+                      name="trainingModules"
+                      value="FLE (Français Langue Etrangère)"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded transition-all duration-300"
+                    />
+                    <label htmlFor="module-fle" className="text-sm text-grayDark">FLE (Français Langue Etrangère)</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="module-writing"
+                      name="trainingModules"
+                      value="Ateliers de rédaction scientifique"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded transition-all duration-300"
+                    />
+                    <label htmlFor="module-writing" className="text-sm text-grayDark">Ateliers de rédaction scientifique</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="module-bibliographic"
+                      name="trainingModules"
+                      value="Accompagnement bibliographique et accès aux archives universitaires"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded transition-all duration-300"
+                    />
+                    <label htmlFor="module-bibliographic" className="text-sm text-grayDark">Accompagnement bibliographique et accès aux archives universitaires</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="module-coaching"
+                      name="trainingModules"
+                      value="Coaching de thèse"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded transition-all duration-300"
+                    />
+                    <label htmlFor="module-coaching" className="text-sm text-grayDark">Coaching de thèse</label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="animate-on-scroll opacity-0 translate-y-4 transition-all duration-700 ease-out group">
                 <label htmlFor="message" className="block text-sm font-medium text-grayDark mb-2 group-focus-within:text-primary transition-colors">Message / Motivation</label>
                 <textarea
                   id="message"
