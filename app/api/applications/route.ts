@@ -1,20 +1,7 @@
 import { NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
+import { put } from '@vercel/blob'
 import prisma from '@/lib/prisma'
 import nodemailer from 'nodemailer'
-
-async function saveFile(file: File, folder: string) {
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-  
-  const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-  const filename = uniqueSuffix + '-' + file.name
-  const filepath = join(process.cwd(), 'public', 'uploads', filename)
-  
-  await writeFile(filepath, buffer)
-  return `/uploads/${filename}`
-}
 
 function validateEmail(email: string) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -24,6 +11,17 @@ function validateEmail(email: string) {
 function validatePhone(phone: string) {
   const re = /^[\d\s\-\+\(\)]{6,}$/
   return re.test(phone)
+}
+
+async function uploadToVercelBlob(file: File, prefix: string) {
+  const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+  const filename = `${prefix}-${uniqueSuffix}-${file.name}`
+  
+  const blob = await put(filename, file, {
+    access: 'public',
+  })
+  
+  return blob.url
 }
 
 export async function POST(request: Request) {
@@ -102,11 +100,11 @@ export async function POST(request: Request) {
     let diplomaUrl = null
 
     if (cvFile) {
-      cvUrl = await saveFile(cvFile, 'uploads')
+      cvUrl = await uploadToVercelBlob(cvFile, 'cv')
     }
 
     if (diplomaFile && diplomaFile.size > 0) {
-      diplomaUrl = await saveFile(diplomaFile, 'uploads')
+      diplomaUrl = await uploadToVercelBlob(diplomaFile, 'diploma')
     }
 
     const application = await prisma.application.create({
@@ -186,23 +184,12 @@ export async function POST(request: Request) {
               ${message ? `<li><strong>Message :</strong> ${message}</li>` : ''}
             </ul>
 
+            ${cvUrl ? `<p><strong>CV :</strong> <a href="${cvUrl}">Télécharger</a></p>` : ''}
+            ${diplomaUrl ? `<p><strong>Diplôme :</strong> <a href="${diplomaUrl}">Télécharger</a></p>` : ''}
+
             <p>Cordialement,<br>Système automatique de candidature</p>
           </div>
         `
-
-        const attachments = []
-        if (cvUrl) {
-          attachments.push({
-            path: join(process.cwd(), 'public', cvUrl),
-            filename: cvFile?.name,
-          })
-        }
-        if (diplomaUrl) {
-          attachments.push({
-            path: join(process.cwd(), 'public', diplomaUrl),
-            filename: diplomaFile?.name,
-          })
-        }
 
         await transporter.sendMail({
           from: '"DBA Genève Global Institute" <no-reply@dbageneve.com>',
@@ -217,7 +204,6 @@ export async function POST(request: Request) {
             to: process.env.DIRECTRICE_EMAIL,
             subject: `Nouvelle candidature reçue - ${firstName} ${lastName}`,
             html: directorEmailHtml,
-            attachments,
           })
         }
       }
