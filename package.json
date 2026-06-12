@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/use-db.js sqlite && next dev",
+    "build": "node scripts/use-db.js postgresql && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "use-sqlite": "node scripts/use-db.js sqlite",
+    "use-postgresql": "node scripts/use-db.js postgresql"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
