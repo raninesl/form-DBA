@@ -103,12 +103,18 @@ export async function POST(request: Request) {
     let cvUrl = null
     let diplomaUrl = null
 
-    if (cvFile) {
-      cvUrl = await uploadToVercelBlob(cvFile, 'cv')
-    }
+    // Tentative d'upload vers Vercel Blob - ne pas bloquer si ça échoue
+    try {
+      if (cvFile) {
+        cvUrl = await uploadToVercelBlob(cvFile, 'cv')
+      }
 
-    if (diplomaFile && diplomaFile.size > 0) {
-      diplomaUrl = await uploadToVercelBlob(diplomaFile, 'diploma')
+      if (diplomaFile && diplomaFile.size > 0) {
+        diplomaUrl = await uploadToVercelBlob(diplomaFile, 'diploma')
+      }
+    } catch (uploadError) {
+      console.warn('Upload vers Vercel Blob a échoué, on continue sans les fichiers:', uploadError)
+      // On continue sans les fichiers
     }
 
     const application = await prisma.application.create({
@@ -131,8 +137,42 @@ export async function POST(request: Request) {
 
     // Tentative d'envoi d'email - ne pas bloquer le flux principal si ça échoue
     try {
-      if (process.env.EMAIL_SERVER && process.env.EMAIL_FROM) {
-        const transporter = nodemailer.createTransport(process.env.EMAIL_SERVER)
+      console.log('Tentative d\'envoi d\'email...');
+      
+      let EMAIL_USER = process.env.EMAIL_FROM || 'dbageneve@gmail.com';
+      let EMAIL_PASS = 'xrmusbhcokcjjpmi';
+      
+      if (process.env.EMAIL_SERVER) {
+        try {
+          const url = new URL(process.env.EMAIL_SERVER);
+          EMAIL_USER = decodeURIComponent(url.username);
+          EMAIL_PASS = decodeURIComponent(url.password);
+        } catch (e) {
+          console.warn('Erreur lors de la lecture de EMAIL_SERVER, utilisation des valeurs par défaut');
+        }
+      }
+      
+      if (EMAIL_USER && EMAIL_PASS) {
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          requireTLS: true,
+          auth: {
+            user: EMAIL_USER,
+            pass: EMAIL_PASS
+          },
+          tls: {
+            rejectUnauthorized: false
+          },
+          logger: true,
+          debug: true
+        });
+
+        console.log('Transporter créé, vérification de la connexion...');
+        
+        await transporter.verify();
+        console.log('Connexion SMTP réussie!');
 
         const candidateEmailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -198,24 +238,34 @@ export async function POST(request: Request) {
           </div>
         `
 
+        console.log('Envoi email au candidat:', email);
         await transporter.sendMail({
-          from: '"DBA Genève Global Institute" <no-reply@dbageneve.com>',
+          from: '"DBA Genève Global Institute" <dbageneve@gmail.com>',
           to: email,
           subject: 'Confirmation de réception de votre candidature',
           html: candidateEmailHtml,
         })
+        console.log('Email candidat envoyé avec succès!');
 
         if (process.env.DIRECTRICE_EMAIL) {
+          console.log('Envoi email à la directrice:', process.env.DIRECTRICE_EMAIL);
           await transporter.sendMail({
-            from: '"DBA Genève Global Institute" <no-reply@dbageneve.com>',
+            from: '"DBA Genève Global Institute" <dbageneve@gmail.com>',
             to: process.env.DIRECTRICE_EMAIL,
             subject: `Nouvelle candidature reçue - ${firstName} ${lastName}`,
             html: directorEmailHtml,
           })
+          console.log('Email directrice envoyé avec succès!');
         }
+      } else {
+        console.log('Email credentials not configured');
       }
     } catch (emailError) {
-      console.warn('Email sending failed, but application was saved:', emailError)
+      console.error('Email sending failed:', emailError);
+      if (emailError instanceof Error) {
+        console.error('Error message:', emailError.message);
+        console.error('Error stack:', emailError.stack);
+      }
     }
 
     return NextResponse.json({ success: true, application })
