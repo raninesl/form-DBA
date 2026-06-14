@@ -139,8 +139,8 @@ export async function POST(request: Request) {
     try {
       console.log('Tentative d\'envoi d\'email...');
       
-      let EMAIL_USER = process.env.EMAIL_FROM || 'dbageneve@gmail.com';
-      let EMAIL_PASS = 'xrmusbhcokcjjpmi';
+      let EMAIL_USER = process.env.EMAIL_FROM || 'direction.dbageneve@gmail.com';
+      let EMAIL_PASS = 'vqcypbseylyiigsa';
       
       if (process.env.EMAIL_SERVER) {
         try {
@@ -240,7 +240,7 @@ export async function POST(request: Request) {
 
         console.log('Envoi email au candidat:', email);
         await transporter.sendMail({
-          from: '"DBA Genève Global Institute" <dbageneve@gmail.com>',
+          from: '"DBA Genève Global Institute" <direction.dbageneve@gmail.com>',
           to: email,
           subject: 'Confirmation de réception de votre candidature',
           html: candidateEmailHtml,
@@ -250,7 +250,7 @@ export async function POST(request: Request) {
         if (process.env.DIRECTRICE_EMAIL) {
           console.log('Envoi email à la directrice:', process.env.DIRECTRICE_EMAIL);
           await transporter.sendMail({
-            from: '"DBA Genève Global Institute" <dbageneve@gmail.com>',
+            from: '"DBA Genève Global Institute" <direction.dbageneve@gmail.com>',
             to: process.env.DIRECTRICE_EMAIL,
             subject: `Nouvelle candidature reçue - ${firstName} ${lastName}`,
             html: directorEmailHtml,
